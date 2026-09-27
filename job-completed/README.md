@@ -14,9 +14,18 @@ did not. The script is `set -euo pipefail`. Its upload order was:
 2. some Docker volumes
 3. the database
 
-The secrets upload started returning `InvalidAccessKeyId`. Under `set -e` that
-killed the run before the database was ever uploaded. The least valuable
-artefact in the job was positioned to destroy the most valuable one.
+The secrets upload started failing. Under `set -e` that killed the run before
+the database was ever uploaded. The least valuable artefact in the job was
+positioned to destroy the most valuable one.
+
+Worth being precise about what the failure was, because it changes the lesson.
+For the first thirteen days it was `ConnectTimeout`. Only later did it become
+`InvalidAccessKeyId`, when the account behind the bucket was closed. An earlier
+pair of nights had failed the same way months before, with a healthy account
+and a valid key, and recovered on their own.
+
+So this was not a billing problem, and fixing the billing did not fix it. One
+transient network blip on the least important upload in the job is enough.
 
 Everything a person would look at stayed reassuring. The local dump directory
 had files dated that morning, because the dump happens before the upload. The
