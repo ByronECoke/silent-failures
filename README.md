@@ -14,6 +14,7 @@ Each directory here is one check, with the incident that produced it.
 |---|---|---|
 | [`artefact-age`](artefact-age/) | Is the newest backup actually new? | [Twenty-seven days with no backup](https://paxmentis.com/f) |
 | [`cert-expiry`](cert-expiry/) | Does the certificate the world sees expire soon? | |
+| [`job-completed`](job-completed/) | Did the job reach its last line, or die two thirds in? | |
 
 Plain POSIX shell, no dependencies beyond coreutils and openssl. Every check
 exits 0 when healthy, 1 when it is not, and 2 on bad usage, so they drop into
@@ -34,6 +35,7 @@ wrong thing.
 
     ./artefact-age/check-artefact-age.sh /srv/backups 26 '*.sql.gz'
     ./cert-expiry/check-cert-expiry.sh 21 example.com mail.example.com
+    ./job-completed/check-job-completed.sh /var/log/backup.log '==> Done:' 26
 
 Thresholds are arguments rather than configuration on purpose. A check you have
 to configure is a check you will not deploy.
