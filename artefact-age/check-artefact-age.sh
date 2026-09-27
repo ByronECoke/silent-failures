@@ -18,8 +18,12 @@ dir=$1; max_hours=$2; glob=${3:-*}
 case $max_hours in ''|*[!0-9]*) die "max-age-hours must be a whole number" ;; esac
 
 # -print0 so filenames with spaces or newlines cannot split a record.
+# NOT `| head -zn1`: head closes the pipe, sort takes SIGPIPE, and under
+# `set -o pipefail` the whole script dies with 141 and prints NOTHING. That is
+# silent failure, which is the exact thing this script exists to catch. Read the
+# first record instead, so nothing closes the pipe early.
 newest=$(find "$dir" -type f -name "$glob" -printf '%T@ %p\0' 2>/dev/null \
-         | sort -zrn | head -zn1 | tr -d '\0')
+         | sort -zrn | { IFS= read -r -d '' first || true; printf '%s' "$first"; })
 
 if [ -z "$newest" ]; then
   # No artefact at all is the case people forget to alert on. It is not "fine".
